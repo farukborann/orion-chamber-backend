@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum CreditPeriod {
+  MONTHLY
+  WEEKLY
+}
+
+enum ProcessType {
+  VTON
+}
+
+enum ProcessStatus {
+  PENDING
+  INPROGRESS
+  COMPLETED
+}
+
+enum ProcessVisibility {
+  ME
+  TEAM
+}
+
+// Models
+model User {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName    String
+  lastName     String
+  email        String  @unique
+  password     String
+  profilePhoto String?
+  isAdmin      Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  teamMemberships TeamMember[] @relation("UserTeamMemberships")
+  teamsLed        Team[]       @relation("TeamLead")
+  processes       Process[]    @relation("UserProcesses")
+
+  @@map("users")
+}
+
+model Team {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  photo        String?
+  leadID       String @db.ObjectId
+  totalCredits Int    @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  lead     User         @relation("TeamLead", fields: [leadID], references: [id])
+  members  TeamMember[] @relation("TeamMembers")
+  processes Process[]   @relation("TeamProcesses")
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  teamID       String      @db.ObjectId
+  userID       String      @db.ObjectId
+  maxCredit    Int         @default(0)
+  creditPeriod CreditPeriod @default(MONTHLY)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  team Team @relation("TeamMembers", fields: [teamID], references: [id])
+  user User @relation("UserTeamMemberships", fields: [userID], references: [id])
+
+  @@map("team_members")
+  @@unique([teamID, userID], name: "unique_team_user")
+}
+
+model Process {
+  id         String            @id @default(auto()) @map("_id") @db.ObjectId
+  userID     String            @db.ObjectId
+  teamID     String            @db.ObjectId
+  priority   Int               @default(1)
+  type       ProcessType
+  inputs     Json
+  outputs    Json?
+  status     ProcessStatus     @default(PENDING)
+  visibility ProcessVisibility @default(ME)
+  credit     Int               @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  user User @relation("UserProcesses", fields: [userID], references: [id])
+  team Team @relation("TeamProcesses", fields: [teamID], references: [id])
+
+  @@map("processes")
+}
+
+model VtonMannequin {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  mainImage String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@map("vton_mannequins")
+}

@@ -1,3 +1,4 @@
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -15,6 +16,7 @@ module.exports = {
     node: true,
     jest: true,
   },
+  eolLast: 'off',
   ignorePatterns: ['.eslintrc.js'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
