@@ -1,5 +1,5 @@
 import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import {
   UpdateProfileDto,
   UserProfileDto,
@@ -63,7 +63,8 @@ export class UsersController {
   }
 
   @Get('test')
+  @ApiOperation({ operationId: 'usersTest' })
   test() {
-    return { message: 'User endpoints are working!' };
+    return { message: 'Users endpoints are working!' };
   }
 }

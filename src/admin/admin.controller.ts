@@ -7,7 +7,7 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import {
   MakeAdminDto,
@@ -90,6 +90,7 @@ export class AdminController {
   }
 
   @Get('test')
+  @ApiOperation({ operationId: 'adminTest' })
   test() {
     return { message: 'Admin endpoints are working!' };
   }

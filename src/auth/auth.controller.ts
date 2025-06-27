@@ -80,7 +80,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AuthGuard)
-  async getProfile(@User() user: SessionUser): Promise<MeResponseDto> {
+  async getMe(@User() user: SessionUser): Promise<MeResponseDto> {
     const userProfile = await this.authService.findById(user.userId.toString());
 
     if (!userProfile) {

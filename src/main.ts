@@ -58,26 +58,57 @@ async function bootstrap() {
 
   // Swagger configuration - only in development
   if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .setTitle('Orion Chamber API')
-      .setDescription('AI-powered Virtual Try-On system backend API')
+    // Import modules for proper filtering
+    const { AdminModule } = await import('./admin/admin.module');
+    const { AuthModule } = await import('./auth/auth.module');
+    const { StorageModule } = await import('./storage/storage.module');
+    const { UsersModule } = await import('./users/users.module');
+    const { TeamsModule } = await import('./teams/teams.module');
+    const { VtonModule } = await import('./vton/vton.module');
+
+    // Admin API Documentation
+    const adminConfig = new DocumentBuilder()
+      .setTitle('Orion Chamber Admin API')
+      .setDescription('Admin-only endpoints for system management')
       .setVersion('1.0')
-      .addTag('auth', 'Authentication endpoints')
-      .addTag('admin', 'Admin management endpoints')
-      .addTag('admin/teams', 'Admin team management endpoints')
-      .addTag('users', 'User management endpoints')
-      .addTag('teams', 'Team management endpoints')
-      .addTag('storage', 'File storage endpoints')
-      .addTag('vton', 'Virtual Try-On endpoints')
       .addCookieAuth('connect.sid')
       .build();
 
-    const document = SwaggerModule.createDocument(app, config, {
+    const adminDocument = SwaggerModule.createDocument(app, adminConfig, {
+      include: [AdminModule, AuthModule, StorageModule],
       operationIdFactory: (controllerKey: string, methodKey: string) =>
         methodKey,
     });
 
-    SwaggerModule.setup('api/docs', app, document, {
+    SwaggerModule.setup('api/admin-docs', app, adminDocument, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        deepLinking: true,
+        displayOperationId: true,
+      },
+    });
+
+    // User API Documentation
+    const userConfig = new DocumentBuilder()
+      .setTitle('Orion Chamber User API')
+      .setDescription('User endpoints for regular operations')
+      .setVersion('1.0')
+      .addCookieAuth('connect.sid')
+      .build();
+
+    const userDocument = SwaggerModule.createDocument(app, userConfig, {
+      include: [
+        AuthModule,
+        UsersModule,
+        TeamsModule,
+        StorageModule,
+        VtonModule,
+      ],
+      operationIdFactory: (controllerKey: string, methodKey: string) =>
+        methodKey,
+    });
+
+    SwaggerModule.setup('api/user-docs', app, userDocument, {
       swaggerOptions: {
         persistAuthorization: true,
         deepLinking: true,
@@ -86,7 +117,10 @@ async function bootstrap() {
     });
 
     console.log(
-      `📚 Swagger documentation available at: http://localhost:${process.env.PORT!}/api/docs`,
+      `📚 Admin API documentation: http://localhost:${process.env.PORT!}/api/admin-docs`,
+    );
+    console.log(
+      `📚 User API documentation: http://localhost:${process.env.PORT!}/api/user-docs`,
     );
   }
 

@@ -8,10 +8,17 @@ import {
 } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMannequinField } from '../../core/decorators';
+import { IsMannequinField, IsMongoID } from '../../core/decorators';
 import { GarmentType } from '../types';
 
 export class CreateVtonProcessDto {
+  @ApiProperty({
+    description: 'Team ID (ObjectId)',
+    example: '60f1234567890abcdef12345',
+  })
+  @IsMongoID()
+  teamId: string;
+
   @ApiProperty({
     description: 'Mannequin ID (ObjectId) or base64 uploaded image',
     example: '60f1234567890abcdef12345',

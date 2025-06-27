@@ -100,7 +100,10 @@ export class TeamsAdminController {
   }
 
   @Get('test')
-  @ApiOperation({ summary: 'Admin teams endpoints test' })
+  @ApiOperation({
+    summary: 'Admin teams endpoints test',
+    operationId: 'adminTeamsTest',
+  })
   test() {
     return { message: 'Admin teams endpoints are working!' };
   }

@@ -46,12 +46,12 @@ export class VtonController {
    */
   @Post('create')
   async createVtonProcess(
-    @User() user: { userId: string; teamID: string },
+    @User() user: { userId: string },
     @Body() createVtonProcessDto: CreateVtonProcessDto,
   ): Promise<VtonProcessResponseDto> {
     return this.vtonService.createVtonProcess(
       user.userId,
-      user.teamID,
+      createVtonProcessDto.teamId,
       createVtonProcessDto,
     );
   }

@@ -9,7 +9,7 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import {
   UpdateTeamDto,
   AddMemberDto,
@@ -223,6 +223,7 @@ export class TeamsController {
   }
 
   @Get('test')
+  @ApiOperation({ operationId: 'teamsTest' })
   test() {
     return { message: 'Teams endpoints are working!' };
   }

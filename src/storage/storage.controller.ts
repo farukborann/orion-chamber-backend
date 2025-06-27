@@ -10,7 +10,7 @@ import {
   Res,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { FileUploadDto, FileUploadResponseDto } from './dto';
 import { StorageService } from './storage.service';
 import { AuthGuard } from '../core/guards/auth.guard';
@@ -70,6 +70,7 @@ export class StorageController {
   }
 
   @Get('test')
+  @ApiOperation({ operationId: 'storageTest' })
   test() {
     return { message: 'Storage endpoints are working!' };
   }
